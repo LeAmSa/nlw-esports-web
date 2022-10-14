@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
-import './styles/main.css';
-import logoImg from './assets/logo-nlw-esports.svg';
-import GameBanner from './components/GameBanner';
-import CreateAdBanner from './components/CreateAdBanner';
+import { useEffect, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import "./styles/main.css";
+import logoImg from "./assets/logo-nlw-esports.svg";
+import GameBanner from "./components/GameBanner";
+import CreateAdBanner from "./components/CreateAdBanner";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 
-import CreateAdModal from './components/CreateAdModal';
-import axios from 'axios';
+import CreateAdModal from "./components/CreateAdModal";
+import axios from "axios";
 
 export interface Game {
   id: string;
@@ -14,53 +16,63 @@ export interface Game {
   bannerUrl: string;
   _count: {
     ads: number;
-  }
-
+  };
 }
 
-export const BASE_URL = 'http://localhost:3333/games';
+export const BASE_URL = "http://localhost:3333/games";
 
 function App() {
+  const [ref] = useKeenSlider<HTMLDivElement>({
+    slides: {
+      perView: 6,
+      spacing: 24,
+    },
+  });
 
   const [games, setGames] = useState<Game[]>([]);
 
   useEffect(() => {
-    axios(BASE_URL).then(res => {
-        setGames(res.data);
-      })
+    axios(BASE_URL).then((res) => {
+      setGames(res.data);
+    });
   }, []);
 
   return (
-    <div className='max-w-[1344px] mx-auto flex flex-col items-center my-20'>
-      <img className='w-60' src={logoImg} alt="" />
+    <div className="max-w-[1344px] mx-auto flex flex-col items-center my-20">
+      <img className="w-60" src={logoImg} alt="" />
 
-      <h1 className='text-6xl text-white font-black mt-20'>
-        Seu <span className="text-transparent bg-nlw-gradient bg-clip-text">duo</span> está aqui.
+      <h1 className="text-6xl text-white font-black mt-20">
+        Seu{" "}
+        <span className="text-transparent bg-nlw-gradient bg-clip-text">
+          duo
+        </span>{" "}
+        está aqui.
       </h1>
 
       {/* grid de jogos */}
-      <div className='grid grid-cols-6 gap-6 mt-16'>
-        {
-          games.map(game => {
-            return (
-              <GameBanner
-              key={game.id} 
-              bannerUrl={game.bannerUrl} 
-              title={game.title} 
-              adsCount={game._count.ads} 
-              />
-            )
-          })
-        }
+      {/* <div className="grid grid-cols-6 gap-6 mt-16"> */}
+
+      <div ref={ref} className="keen-slider mt-16">
+        {games.map((game) => {
+          return (
+            <GameBanner
+              key={game.id}
+              bannerUrl={game.bannerUrl}
+              title={game.title}
+              adsCount={game._count.ads}
+              className="keen-slider__slide"
+            />
+          );
+        })}
       </div>
+      {/* </div> */}
 
       <Dialog.Root>
         <CreateAdBanner />
         <CreateAdModal />
       </Dialog.Root>
-
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

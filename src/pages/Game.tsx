@@ -1,5 +1,7 @@
 import { CaretLeft } from "phosphor-react";
 
+import * as Dialog from "@radix-ui/react-dialog";
+
 import logoImg from "../assets/logo-nlw-esports.svg";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -10,22 +12,34 @@ import { DuoCard, DuoCardProps } from "../components/DuoCard";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "./Home";
 import { useLocation, useNavigate } from "react-router-dom";
+import { DuoMatch } from "../components/DuoMatch";
+
+import { TailSpin } from "react-loader-spinner";
 
 export function Game() {
   const [duos, setDuos] = useState<DuoCardProps[]>([]);
   const [discordDuoSelected, setDiscordDuoSelected] = useState("");
 
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
+  async function getDiscordUser(adsId: string) {
+    fetch(`http://localhost:3333/ads/${adsId}/discord`)
+      .then((res) => res.json())
+      .then((data) => setDiscordDuoSelected(data.discord));
+  }
+
   useEffect(() => {
     fetch(`${BASE_URL}/${location.state.id}/ads`)
       .then((res) => res.json())
-      .then((data) => setDuos(data));
+      .then((data) => {
+        setDuos(data);
+        setLoading(false);
+      });
   }, []);
-
-  console.log(duos);
 
   return (
     <div className="max-w-[1344px] mx-auto flex flex-col items-center my-10 md:my-20 px-4">
@@ -49,18 +63,70 @@ export function Game() {
           className="w-[310px] md:w-96 h-[100px] object-cover rounded-lg"
         />
 
-        <div className="mt-8">
+        <div className="mt-8 flex items-center gap-1">
           <h1 className="text-white font-bold text-2xl md:text-3xl">
             {location.state.title}
           </h1>
-          <span className="text-gray-400">Conecte-se e comece a jogar!</span>
+          {duos.length > 0 && (
+            <span className="text-white text-sm md:text-base">
+              &bull; {duos.length} anúncio(s)
+            </span>
+          )}
         </div>
+        <span className="text-gray-400">Conecte-se e comece a jogar!</span>
 
-        <div className="grid grid-cols-2 gap-x-4 overflow-x-scroll">
-          {duos.map((duo) => {
-            return <DuoCard key={duo.id} data={duo} />;
-          })}
-        </div>
+        {loading ? (
+          <div className="mt-24">
+            <TailSpin height="28" width="28" color="#8b5cf6" />
+          </div>
+        ) : duos.length > 0 ? (
+          <Dialog.Root>
+            <Swiper
+              className="mt-4 w-full z-0"
+              breakpoints={{
+                0: {
+                  slidesPerView: 2,
+                  spaceBetween: 80,
+                  centeredSlides: true,
+                  freeMode: true,
+                  modules: [FreeMode],
+                },
+                768: {
+                  slidesPerView: 4,
+                  spaceBetween: 24,
+                  freeMode: true,
+                  centeredSlides: false,
+                  modules: [FreeMode],
+                },
+                1344: {
+                  slidesPerView: 5,
+                  spaceBetween: 12,
+                  freeMode: true,
+                  centeredSlides: false,
+                  modules: [FreeMode],
+                },
+              }}
+            >
+              {duos.map((duo) => {
+                return (
+                  <SwiperSlide key={duo.id}>
+                    <DuoCard
+                      data={duo}
+                      onConnect={() => {
+                        getDiscordUser(duo.id);
+                      }}
+                    />
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+            <DuoMatch discord={discordDuoSelected} />
+          </Dialog.Root>
+        ) : (
+          <span className="text-white mt-24">
+            Não há anúncios publicados ainda...
+          </span>
+        )}
       </main>
     </div>
   );

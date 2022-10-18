@@ -1,6 +1,7 @@
 import { DuoInfo } from "./DuoInfo";
 
 import { GameController } from "phosphor-react";
+import * as Dialog from "@radix-ui/react-dialog";
 
 export interface DuoCardProps {
   id: string;
@@ -14,7 +15,7 @@ export interface DuoCardProps {
 
 interface Props {
   data: DuoCardProps;
-  onConnect?: () => void;
+  onConnect: () => void;
 }
 
 export function DuoCard({ data, onConnect }: Props) {
@@ -35,13 +36,13 @@ export function DuoCard({ data, onConnect }: Props) {
         colorValue={data.useVoiceChannel ? "text-green-500" : "text-red-500"}
       />
 
-      <button
+      <Dialog.Trigger
         className="w-full h-9 rounded-md bg-violet-500 hover:bg-violet-400 transition-colors flex items-center justify-center gap-2 text-white"
-        onClick={() => {}}
+        onClick={onConnect}
       >
         <GameController size={20} weight="bold" />
         Conectar
-      </button>
+      </Dialog.Trigger>
     </div>
   );
 }

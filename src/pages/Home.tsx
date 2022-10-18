@@ -15,6 +15,7 @@ import CreateAdModal from "../components/CreateAdModal";
 import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
+import { TailSpin } from "react-loader-spinner";
 
 export interface Game {
   id: string;
@@ -29,6 +30,7 @@ export const BASE_URL = "http://localhost:3333/games";
 
 export function Home() {
   const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   function handleOpenGame({ id, title, bannerUrl }: Game) {
@@ -44,6 +46,7 @@ export function Home() {
   useEffect(() => {
     axios(BASE_URL).then((res) => {
       setGames(res.data);
+      setLoading(false);
     });
   }, []);
 
@@ -59,36 +62,42 @@ export function Home() {
         está aqui.
       </h1>
 
-      <Swiper
-        className="mt-14 w-full h-full z-0"
-        breakpoints={{
-          0: {
-            slidesPerView: 3,
-            spaceBetween: 12,
-            centeredSlides: true,
-          },
-          768: {
-            slidesPerView: 5,
-            spaceBetween: 24,
-            freeMode: true,
-            centeredSlides: false,
-            modules: [FreeMode],
-          },
-        }}
-      >
-        {games.map((game) => {
-          return (
-            <SwiperSlide key={game.id}>
-              <GameBanner
-                bannerUrl={game.bannerUrl}
-                title={game.title}
-                adsCount={game._count.ads}
-                onClick={() => handleOpenGame(game)}
-              />
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
+      {loading ? (
+        <div className="my-20 md:my-24">
+          <TailSpin height="28" width="28" color="#8b5cf6" />
+        </div>
+      ) : (
+        <Swiper
+          className="mt-14 w-full h-full z-0"
+          breakpoints={{
+            0: {
+              slidesPerView: 3,
+              spaceBetween: 12,
+              centeredSlides: true,
+            },
+            768: {
+              slidesPerView: 5,
+              spaceBetween: 24,
+              freeMode: true,
+              centeredSlides: false,
+              modules: [FreeMode],
+            },
+          }}
+        >
+          {games.map((game) => {
+            return (
+              <SwiperSlide key={game.id}>
+                <GameBanner
+                  bannerUrl={game.bannerUrl}
+                  title={game.title}
+                  adsCount={game._count.ads}
+                  onClick={() => handleOpenGame(game)}
+                />
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      )}
 
       <Dialog.Root>
         <CreateAdBanner />

@@ -34,7 +34,7 @@ export function Home() {
   const navigate = useNavigate();
 
   function handleOpenGame({ id, title, bannerUrl }: Game) {
-    navigate("/game", {
+    navigate(`/game/${id}/ads`, {
       state: {
         id,
         title,

@@ -51,7 +51,7 @@ export function Game() {
           onClick={() => navigate("/")}
         />
 
-        <img className="w-36 md:w-60" src={logoImg} alt="" />
+        <img className="w-36 md:w-60" src={logoImg} alt="Logo" />
 
         <div></div>
       </header>

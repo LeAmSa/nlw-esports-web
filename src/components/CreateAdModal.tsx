@@ -3,18 +3,19 @@ import Input from "./Form/Input";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
-import { CheckCircle } from "phosphor-react";
 import { BASE_URL } from "../pages/Home";
 import { useEffect, useState, FormEvent } from "react";
 import { Game } from "../pages/Home";
 import axios from "axios";
+import { Alert } from "./Alert";
 
 function CreateAdModal() {
   const [games, setGames] = useState<Game[]>([]);
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSuccessOrErrorMessage, setAlertSuccessOrErrorMessage] =
+    useState("");
 
   useEffect(() => {
     axios(BASE_URL).then((res) => {
@@ -46,11 +47,12 @@ function CreateAdModal() {
         useVoiceChannel: useVoiceChannel,
       });
 
-      // alert("Anúncio criado com sucesso!");
       setAlertOpen(true);
+      setAlertSuccessOrErrorMessage("success");
     } catch (error) {
       console.log(error);
-      alert("Erro ao criar o anúncio!");
+      setAlertOpen(true);
+      setAlertSuccessOrErrorMessage("error");
     }
   }
 
@@ -244,24 +246,13 @@ function CreateAdModal() {
         </form>
       </Dialog.Content>
 
-      <AlertDialog.Root open={alertOpen} onOpenChange={setAlertOpen}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay className="bg-black/60 inset-0 fixed z-50" />
-          <AlertDialog.Content className="fixed bg-[#2A2634] py-8 px-6 md:px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-between rounded w-96 shadow-lg z-50">
-            <div className="flex items-center gap-2">
-              <CheckCircle size={40} weight="bold" color="#22c55e" />
-              <span>Anúncio criado com sucesso!</span>
-            </div>
-            <AlertDialog.Action className="text-violet-500 font-bold">
-              OK
-            </AlertDialog.Action>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog.Root>
+      <Alert
+        message={alertSuccessOrErrorMessage}
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+      />
     </Dialog.Portal>
   );
 }
 
 export default CreateAdModal;
-
-//CRIAR ESSE ALERT DIALOG COMO COMPONENTE, FAZENDO COM QUE O ÍCONE E A MENSAGEM SEJAM DINÂMICOS

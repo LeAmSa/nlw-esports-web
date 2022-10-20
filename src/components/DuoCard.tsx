@@ -20,14 +20,14 @@ interface Props {
 
 export function DuoCard({ data, onConnect }: Props) {
   return (
-    <div className="mt-8 w-[200px] rounded-lg p-5 flex flex-col gap-2 items-center bg-[#2A2634] shadow-md">
+    <div className="mt-8 w-[210px] rounded-lg p-5 flex flex-col gap-2 items-center bg-[#2A2634] shadow-md">
       <DuoInfo label="Nome" value={data.name} />
 
-      <DuoInfo label="Tempo de jogo" value={`${data.yearsPlaying} anos`} />
+      <DuoInfo label="Tempo de jogo" value={`${data.yearsPlaying} ano(s)`} />
 
       <DuoInfo
         label="Disponibilidade"
-        value={`${data.weekDays.length} dias \u2022 ${data.hourStart} - ${data.hourEnd}`}
+        value={`${data.weekDays.length} dia(s) \u2022 ${data.hourStart} - ${data.hourEnd}`}
       />
 
       <DuoInfo

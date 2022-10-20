@@ -9,33 +9,49 @@ import { Game } from "../pages/Home";
 import axios from "axios";
 import { Alert } from "./Alert";
 
+import { useForm } from "react-hook-form";
+
+export type FormData = {
+  game: string;
+  name: string;
+  yearsPlaying: Number;
+  discord: string;
+  hourStart: string;
+  hourEnd: string;
+};
+
 function CreateAdModal() {
   const [games, setGames] = useState<Game[]>([]);
   const [weekDays, setWeekDays] = useState<string[]>([]);
+  const [isWeekDaysEmpty, setIsWeekDaysEmpty] = useState(false);
   const [useVoiceChannel, setUseVoiceChannel] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSuccessOrErrorMessage, setAlertSuccessOrErrorMessage] =
     useState("");
 
-  useEffect(() => {
-    axios(BASE_URL).then((res) => {
-      setGames(res.data);
-    });
-  }, []);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      game: "",
+      name: "",
+      yearsPlaying: "",
+      discord: "",
+      hourStart: "",
+      hourEnd: "",
+    },
+  });
 
-  async function handleCreateAd(event: FormEvent) {
-    event.preventDefault();
-
-    //Recebendo os dados do form
-    const formData = new FormData(event.target as HTMLFormElement);
-    const data = Object.fromEntries(formData);
-
-    //pequena validação para o caso do form ser vazio
-    if (!data.name) {
+  const onSubmit = handleSubmit(async (data) => {
+    if (weekDays.length === 0) {
+      setIsWeekDaysEmpty(true);
       return;
+    } else {
+      setIsWeekDaysEmpty(false);
     }
 
-    //enviando para o backend
     try {
       await axios.post(`http://localhost:3333/games/${data.game}/ads`, {
         name: data.name,
@@ -46,7 +62,6 @@ function CreateAdModal() {
         hourEnd: data.hourEnd,
         useVoiceChannel: useVoiceChannel,
       });
-
       setAlertOpen(true);
       setAlertSuccessOrErrorMessage("success");
     } catch (error) {
@@ -54,27 +69,37 @@ function CreateAdModal() {
       setAlertOpen(true);
       setAlertSuccessOrErrorMessage("error");
     }
-  }
+  });
+
+  useEffect(() => {
+    axios(BASE_URL).then((res) => {
+      setGames(res.data);
+    });
+  }, []);
 
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="bg-black/60 inset-0 fixed z-50" />
 
-      <Dialog.Content className="fixed bg-[#2A2634] py-8 px-6 md:px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[330px] md:w-[480px] h-5/6 md:h-auto shadow-lg shadow-black/50 overflow-y-scroll md:overflow-auto z-50">
+      <Dialog.Content className="fixed bg-[#2A2634] py-8 px-6 md:px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[330px] md:w-[500px] h-5/6 md:h-auto shadow-lg shadow-black/50 overflow-y-scroll md:overflow-auto z-50">
         <Dialog.Title className="text-2xl md:text-3xl font-black">
           Publique um anúncio
         </Dialog.Title>
 
-        <form onSubmit={handleCreateAd} className="mt-8 flex flex-col gap-4">
+        <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="game" className="font-semibold">
               Qual o game?
             </label>
             <select
+              //@ts-ignore
               name="game"
               id="game"
-              className="bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500 appearance-none"
+              className={`bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500 appearance-none ${
+                errors.game && "border border-red-500"
+              }`}
               defaultValue=""
+              {...register("game", { required: "Campo obrigatório" })}
             >
               <option disabled value="">
                 Selecione o game que deseja jogar
@@ -88,6 +113,11 @@ function CreateAdModal() {
                 );
               })}
             </select>
+            {errors.game && (
+              <p className="text-red-500 text-xs font-semibold">
+                {errors.game.message}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -96,6 +126,8 @@ function CreateAdModal() {
               name="name"
               id="name"
               placeholder="Como te chamam dentro do game?"
+              register={register}
+              errors={errors}
             />
           </div>
 
@@ -107,6 +139,8 @@ function CreateAdModal() {
                 id="yearsPlaying"
                 type="number"
                 placeholder="Tudo bem ser ZERO"
+                register={register}
+                errors={errors}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -116,6 +150,8 @@ function CreateAdModal() {
                 id="discord"
                 type="text"
                 placeholder="Usuario#0000"
+                register={register}
+                errors={errors}
               />
             </div>
           </div>
@@ -194,22 +230,37 @@ function CreateAdModal() {
                   S
                 </ToggleGroup.Item>
               </ToggleGroup.Root>
+              {isWeekDaysEmpty && (
+                <p className="text-red-500 text-xs font-semibold">
+                  Selecione os dias da semana
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-2 flex-1">
               <label htmlFor="hourStart">Qual horário do dia?</label>
               <div className="grid grid-cols-2 gap-2">
-                <Input
-                  name="hourStart"
-                  id="hourStart"
-                  type="time"
-                  placeholder="De"
-                />
-                <Input
-                  name="hourEnd"
-                  id="hourEnd"
-                  type="time"
-                  placeholder="Até"
-                />
+                <div className="flex flex-col">
+                  <label htmlFor="hourStart">De</label>
+                  <Input
+                    name="hourStart"
+                    id="hourStart"
+                    type="time"
+                    placeholder="De"
+                    register={register}
+                    errors={errors}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="hourEnd">Até</label>
+                  <Input
+                    name="hourEnd"
+                    id="hourEnd"
+                    type="time"
+                    placeholder="Até"
+                    register={register}
+                    errors={errors}
+                  />
+                </div>
               </div>
             </div>
           </div>

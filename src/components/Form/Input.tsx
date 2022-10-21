@@ -9,7 +9,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   errors: {};
 }
 
-function Input({ name, register, errors, ...props }: InputProps) {
+export function Input({ name, register, errors, ...props }: InputProps) {
   return (
     <>
       <input
@@ -37,5 +37,3 @@ function Input({ name, register, errors, ...props }: InputProps) {
     </>
   );
 }
-
-export default Input;

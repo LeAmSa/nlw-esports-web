@@ -1,13 +1,16 @@
-import { Check, GameController } from "phosphor-react";
-import Input from "./Form/Input";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
-import { BASE_URL } from "../pages/Home";
-import { useEffect, useState, FormEvent } from "react";
+
 import { Game } from "../pages/Home";
-import axios from "axios";
+import { Input } from "./Form/Input";
 import { Alert } from "./Alert";
+
+import { TailSpin } from "react-loader-spinner";
+import { Check, GameController } from "phosphor-react";
 
 import { useForm } from "react-hook-form";
 
@@ -32,7 +35,7 @@ function CreateAdModal() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
       game: "",
@@ -53,15 +56,18 @@ function CreateAdModal() {
     }
 
     try {
-      await axios.post(`${BASE_URL}/${data.game}/ads`, {
-        name: data.name,
-        yearsPlaying: Number(data.yearsPlaying),
-        discord: data.discord,
-        weekDays: weekDays.map(Number),
-        hourStart: data.hourStart,
-        hourEnd: data.hourEnd,
-        useVoiceChannel: useVoiceChannel,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/games/${data.game}/ads`,
+        {
+          name: data.name,
+          yearsPlaying: Number(data.yearsPlaying),
+          discord: data.discord,
+          weekDays: weekDays.map(Number),
+          hourStart: data.hourStart,
+          hourEnd: data.hourEnd,
+          useVoiceChannel: useVoiceChannel,
+        }
+      );
       setAlertOpen(true);
       setAlertSuccessOrErrorMessage("success");
     } catch (error) {
@@ -72,7 +78,7 @@ function CreateAdModal() {
   });
 
   useEffect(() => {
-    axios(BASE_URL).then((res) => {
+    axios(`${import.meta.env.VITE_API_URL}/games`).then((res) => {
       setGames(res.data);
     });
   }, []);
@@ -283,14 +289,18 @@ function CreateAdModal() {
           </label>
 
           <footer className="mt-4 flex justify-end gap-4">
-            <Dialog.Close className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600">
+            <Dialog.Close className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 transition-colors">
               Cancelar
             </Dialog.Close>
             <button
               type="submit"
-              className="bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center gap-3 hover:bg-violet-600"
+              className="bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center gap-3 hover:bg-violet-600 transition-colors"
             >
-              <GameController size={24} />
+              {isSubmitting ? (
+                <TailSpin height="24" width="24" color="#fff" />
+              ) : (
+                <GameController size={24} />
+              )}
               Encontrar duo
             </button>
           </footer>

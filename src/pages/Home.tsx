@@ -26,8 +26,6 @@ export interface Game {
   };
 }
 
-export const BASE_URL = "http://localhost:3333/games";
-
 export function Home() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +42,7 @@ export function Home() {
   }
 
   useEffect(() => {
-    axios(BASE_URL).then((res) => {
+    axios(`${import.meta.env.VITE_API_URL}/games`).then((res) => {
       setGames(res.data);
       setLoading(false);
     });

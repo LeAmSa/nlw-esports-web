@@ -10,7 +10,6 @@ import "swiper/css";
 import "swiper/css/free-mode";
 import { DuoCard, DuoCardProps } from "../components/DuoCard";
 import { useEffect, useState } from "react";
-import { BASE_URL } from "./Home";
 import { useLocation, useNavigate } from "react-router-dom";
 import { DuoMatch } from "../components/DuoMatch";
 
@@ -27,13 +26,13 @@ export function Game() {
   const location = useLocation();
 
   async function getDiscordUser(adsId: string) {
-    fetch(`http://localhost:3333/ads/${adsId}/discord`)
+    fetch(`${import.meta.env.VITE_API_URL}/ads/${adsId}/discord`)
       .then((res) => res.json())
       .then((data) => setDiscordDuoSelected(data.discord));
   }
 
   useEffect(() => {
-    fetch(`${BASE_URL}/${location.state.id}/ads`)
+    fetch(`${import.meta.env.VITE_API_URL}/games/${location.state.id}/ads`)
       .then((res) => res.json())
       .then((data) => {
         setDuos(data);

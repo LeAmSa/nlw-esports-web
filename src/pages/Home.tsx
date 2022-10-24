@@ -66,7 +66,7 @@ export function Home() {
         </div>
       ) : (
         <Swiper
-          className="mt-14 w-full h-full z-0"
+          className="mt-14 w-full h-full z-0 py-2 pr-2"
           breakpoints={{
             0: {
               slidesPerView: 3,

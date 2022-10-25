@@ -85,7 +85,7 @@ export function Game() {
               breakpoints={{
                 0: {
                   slidesPerView: 2,
-                  spaceBetween: 80,
+                  spaceBetween: 120,
                   centeredSlides: true,
                   freeMode: true,
                   modules: [FreeMode],

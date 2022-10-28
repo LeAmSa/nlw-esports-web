@@ -170,7 +170,7 @@ Here are some useful resources/libraries used during the development.
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 [screenshot]: https://drive.google.com/uc?id=1Uz56R8OBLLuvDYe_SEhPrNLYVRX7kgqx
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/LeAmSa/nlw-esports-web?style=for-the-badge
 [license-url]: https://github.com/LeAmSa/nlw-esports-web/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/leandroamorimsalles1994
